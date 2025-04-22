@@ -3,39 +3,66 @@ import './index.css';
 
 function App() {
   const [mortgageAmount, setMortgageAmount] = useState('');
-  const [termYears, setTermYears] = useState('25');
-  const [interestRate, setInterestRate] = useState('5.25');
+  const [termYears, setTermYears] = useState('');
+  const [interestRate, setInterestRate] = useState('');
   const [mortgageType, setMortgageType] = useState('Repayment');
   const [repaymentAmount, setRepaymentAmount] = useState('');
   const [totalRepayment, setTotalRepayment] = useState('');
 
-  const calculateRepayment = () => {
-    if (mortgageAmount && termYears && interestRate) {
-      const principal = parseFloat(mortgageAmount);
-      const years = parseFloat(termYears);
-      const rate = parseFloat(interestRate) / 100 / 12;
-      const payments = years * 12;
+  // State to track if the fields are valid or not
+  const [errors, setErrors] = useState({
+    mortgageAmount: false,
+    termYears: false,
+    interestRate: false,
+    mortgageType: false,
+  });
 
-      if (mortgageType === 'Repayment') {
-        const x = Math.pow(1 + rate, payments);
-        const monthly = (principal * rate * x) / (x - 1);
-        setRepaymentAmount(monthly.toFixed(2));
-        setTotalRepayment((monthly * payments).toFixed(2));
-      } else {
-        const monthly = principal * rate;
-        setRepaymentAmount(monthly.toFixed(2));
-        setTotalRepayment((monthly * payments + principal).toFixed(2));
-      }
+  // Check if the fields are valid
+  const validateFields = () => {
+    setErrors({
+      mortgageAmount: !mortgageAmount,
+      termYears: !termYears,
+      interestRate: !interestRate,
+      mortgageType: !mortgageType,
+    });
+    return mortgageAmount && termYears && interestRate && mortgageType;
+  };
+
+  const calculateRepayment = () => {
+    if (!validateFields()) {
+      return; // Prevent calculation if any field is invalid
+    }
+
+    const principal = parseFloat(mortgageAmount);
+    const years = parseFloat(termYears);
+    const rate = parseFloat(interestRate) / 100 / 12;
+    const payments = years * 12;
+
+    if (mortgageType === 'Repayment') {
+      const x = Math.pow(1 + rate, payments);
+      const monthly = (principal * rate * x) / (x - 1);
+      setRepaymentAmount(monthly.toFixed(2));
+      setTotalRepayment((monthly * payments).toFixed(2));
+    } else {
+      const monthly = principal * rate;
+      setRepaymentAmount(monthly.toFixed(2));
+      setTotalRepayment((monthly * payments + principal).toFixed(2));
     }
   };
 
   const clearAll = () => {
     setMortgageAmount('');
-    setTermYears('25');
-    setInterestRate('5.25');
+    setTermYears('');
+    setInterestRate('');
     setMortgageType('Repayment');
     setRepaymentAmount('');
     setTotalRepayment('');
+    setErrors({
+      mortgageAmount: false,
+      termYears: false,
+      interestRate: false,
+      mortgageType: false,
+    });
   };
 
   return (
@@ -54,7 +81,9 @@ function App() {
           
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Amount</label>
+              <label className={`block text-sm font-medium mb-1 text-gray-700'}`}>
+                Mortgage Amount
+              </label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">£</span>
                 <input
@@ -66,10 +95,15 @@ function App() {
                   required
                 />
               </div>
+              {errors.mortgageAmount && (
+                <p className="text-red-500 text-xs mt-1">This field is required</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Term</label>
+              <label className={`block text-sm font-medium mb-1 text-gray-700'}`}>
+                Mortgage Term
+              </label>
               <div className="grid grid-cols-2 gap-4">
                 <div className="relative">
                   <input
@@ -77,7 +111,7 @@ function App() {
                     value={termYears}
                     onChange={(e) => setTermYears(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 pr-12"
-                    placeholder="25"
+                    placeholder=""
                     required
                   />
                   <span className="absolute inset-y-0 right-3 flex items-center text-gray-500">years</span>
@@ -90,16 +124,21 @@ function App() {
                     value={interestRate}
                     onChange={(e) => setInterestRate(e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-200 pr-12"
-                    placeholder="5.25"
+                    placeholder=""
                     required
                   />
                   <span className="absolute inset-y-0 right-3 flex items-center text-gray-500">%</span>
                 </div>
               </div>
+              {(errors.termYears || errors.interestRate) && (
+                <p className="text-red-500 text-xs mt-1">This field is required</p>
+              )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mortgage Type</label>
+              <label className={`block text-sm font-medium mb-2 ${errors.mortgageType ? 'text-red-500' : 'text-gray-700'}`}>
+                Mortgage Type
+              </label>
               <div className="space-x-4">
                 <label className="cursor-pointer w-full">
                   <div
@@ -138,20 +177,22 @@ function App() {
                   </div>
                 </label>
               </div>
+              {errors.mortgageType && (
+                <p className="text-red-500 text-xs mt-1">This field is required</p>
+              )}
             </div>
 
             <button
-  onClick={calculateRepayment}
-  className="w-3/5
- bg-[#D8DB2F] hover:bg-[#D8DB2F] text-[#133041] py-2 px-4 rounded-full flex items-center justify-center space-x-2 cursor-pointer"
->
-  <img
-    src="https://i.postimg.cc/DyBXMkZN/Vector-1.png"
-    alt="Calculator Icon"
-    className="h-5 w-5"
-  />
-  <span>Calculate Repayment</span>
-</button>
+              onClick={calculateRepayment}
+              className="w-full md:w-3/5 bg-[#D8DB2F] hover:bg-[#D8DB2F] text-[#133041] py-2 px-4 rounded-full flex items-center justify-center space-x-2 cursor-pointer"
+            >
+              <img
+                src="https://i.postimg.cc/DyBXMkZN/Vector-1.png"
+                alt="Calculator Icon"
+                className="h-5 w-5"
+              />
+              <span>Calculate Repayment</span>
+            </button>
           </div>
         </div>
 
