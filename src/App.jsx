@@ -25,16 +25,30 @@ function App() {
       }
     }
   };
+  const clearAll = () => {
+    setMortgageAmount('');
+    setTermYears('25');
+    setInterestRate('5.25');
+    setMortgageType('Repayment');
+    setRepaymentAmount('');
+  };
 
   return (
     <div className="min-h-screen bg-[#E4F4FD] flex items-center justify-center p-4">
       <div className="flex flex-col md:flex-row bg-white rounded-lg shadow-lg overflow-hidden max-w-4xl w-full">
         {/* Calculator Form Section */}
         <div className="p-8 w-full md:w-1/2">
-        <div className="flex items-center">
-        <h1 className="text-2xl font-bold text-gray-800 mb-2">Mortgage Calculator</h1>
-        <button className="text-sm text-blue-500 mb-4">Clear All</button>
-        </div>
+        <div className="flex items-center justify-between mb-6">
+            <h1 className="text-2xl font-bold text-gray-800">Mortgage Calculator</h1>
+            <button 
+              onClick={clearAll}
+              className="text-sm text-[#133041] hover:text-blue-900 cursor-pointer
+"
+            >
+              Clear All
+            </button>
+          </div>
+          
           
           <div className="space-y-6">
             {/* Mortgage Amount */}
@@ -54,27 +68,34 @@ function App() {
 
             {/* Mortgage Term and Interest Rate */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Term</label>
-              <div className="grid grid-cols-4 gap-2">
-                <input
-                  type="number"
-                  value={termYears}
-                  onChange={(e) => setTermYears(e.target.value)}
-                  className="col-span-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="25"
-                />
-                <span className="col-span-1 flex items-center text-gray-500">years</span>
-                <input
-                  type="number"
-                  step="0.01"
-                  value={interestRate}
-                  onChange={(e) => setInterestRate(e.target.value)}
-                  className="col-span-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="5.25"
-                />
+  <label className="block text-sm font-medium text-gray-700 mb-1">Mortgage Term</label>
+  <div className="grid grid-cols-2 gap-4">
+    {/* Term Years Input */}
+    <div className="relative">
+      <input
+        type="number"
+        value={termYears}
+        onChange={(e) => setTermYears(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-10"
+        placeholder="25"
+      />
+      <span className="absolute inset-y-0 right-2 flex items-center text-gray-500 bg-[#E4F4FD]">years</span>
+    </div>
 
-              </div>
-            </div>
+    {/* Interest Rate Input */}
+    <div className="relative">
+      <input
+        type="number"
+        step="0.01"
+        value={interestRate}
+        onChange={(e) => setInterestRate(e.target.value)}
+        className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500  pr-10"
+        placeholder="5.25"
+      />
+      <span className="absolute inset-y-0 right-2 flex items-center text-gray-500 bg-[#E4F4FD]">%</span>
+    </div>
+  </div>
+</div>
 
             {/* Mortgage Type */}
             <div>
